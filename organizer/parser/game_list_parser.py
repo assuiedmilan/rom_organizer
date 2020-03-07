@@ -92,3 +92,12 @@ class GameListParser:
             text_output.append("\n")
 
         return "\n".join(text_output)
+
+    def create_genre_association_entry(self):
+
+        genre_associations = "genre_associations"
+
+        if not self.parsed_gamelist.find(genre_associations):
+            genre_association_node = ElementTree.Element(genre_associations)
+            genre_association_node.set("text", "Defines aliases between games genres for folders organization")
+            self.parsed_gamelist.write(self.GAMELIST_FILE)
