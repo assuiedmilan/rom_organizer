@@ -33,15 +33,7 @@ class GameListParser:
         self.__parse()
 
     def create_genre_association_entry(self):
-
-        genre_association_node = self.__get_game_association_node()
-
-        if genre_association_node is None:
-
-            genre_association_node = etree.Element(self.GENRE_ASSOCIATION_NODE)
-            genre_association_node.set("text", "Defines aliases between games genres for folders organization")
-            self.parsed_gamelist.getroot().insert(1, genre_association_node)
-
+        self.__add_genre_association_node()
         self.__process_genre_aliases()
 
         self.parsed_gamelist.write(self.gamelist, pretty_print=True)
@@ -50,6 +42,7 @@ class GameListParser:
         parser = etree.XMLParser(remove_blank_text=True)
         self.parsed_gamelist = etree.parse(self.gamelist, parser)
 
+        self.create_genre_association_entry()
         self.__process_all_games()
 
     def __get_all_games(self):
@@ -57,9 +50,6 @@ class GameListParser:
 
     def __get_game_id(self, game):
         return game.get(self.GAME_ID)
-
-    def __game_is_valid(self, game):
-        return self.__get_game_id(game) is not None and self.__get_game_id(game) is not "0"
 
     def __get_game_genre(self, game):
         match_any_slashes_or_space = re.compile(r'(?:\s+|\\+|/+)')
@@ -118,6 +108,9 @@ class GameListParser:
 
             genre_association_node[:] = all_genres
 
+    def __game_is_valid(self, game):
+        return self.__get_game_id(game) is not None and self.__get_game_id(game) is not "0"
+
     def __genre_alias_already_exists(self, genre):
 
         genre_alias_already_exist = False
@@ -131,6 +124,16 @@ class GameListParser:
                     break
 
         return genre_alias_already_exist
+
+    def __add_genre_association_node(self):
+
+        genre_association_node = self.__get_game_association_node()
+
+        if genre_association_node is None:
+
+            genre_association_node = etree.Element(self.GENRE_ASSOCIATION_NODE)
+            genre_association_node.set("text", "Defines aliases between games genres for folders organization")
+            self.parsed_gamelist.getroot().insert(1, genre_association_node)
 
     def __add_genre_node(self, genre):
         genre_association_node = self.__get_game_association_node()
