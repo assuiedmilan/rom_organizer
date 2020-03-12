@@ -62,6 +62,25 @@ class GameListParser:
 
         return genre if genre is not self.NO_TEXT else "Unclassified"
 
+    def __get_game_genre_alias(self, game):
+        genre = self.__get_game_genre(game)
+        return self._get_genre_alias_from_genre(genre)
+
+    def _get_genre_alias_from_genre(self, genre):
+
+        genre_alias = None
+
+        genre_association_node = self.__get_game_association_node()
+
+        if genre_association_node is not None:
+
+            for node in genre_association_node.getchildren():
+                if node.get(self.GENRE_KEY) == genre:
+                    genre_alias = node.get(self.GENRE_ALIAS_KEY)
+                    break
+
+        return genre_alias
+
     def __get_game_path(self, game):
         return self.__process_game_child_value(game, self.PATH_KEY)
 
@@ -77,7 +96,7 @@ class GameListParser:
 
     def __process_game_nodes(self, game):
         if self.__game_is_valid(game):
-            details = {self.GENRE_KEY: self.__get_game_genre(game),
+            details = {self.GENRE_KEY: self.__get_game_genre_alias(game),
                        self.PATH_KEY: self.__get_game_path(game),
                        self.ROOT_KEY: self.root}
 
@@ -112,18 +131,7 @@ class GameListParser:
         return self.__get_game_id(game) is not None and self.__get_game_id(game) is not "0"
 
     def __genre_alias_already_exists(self, genre):
-
-        genre_alias_already_exist = False
-        genre_association_node = self.__get_game_association_node()
-
-        if genre_association_node is not None:
-
-            for node in genre_association_node.getchildren():
-                if node.get(self.GENRE_KEY) == genre:
-                    genre_alias_already_exist = True
-                    break
-
-        return genre_alias_already_exist
+        return self._get_genre_alias_from_genre(genre) is not None
 
     def __add_genre_association_node(self):
 
@@ -158,6 +166,3 @@ class GameListParser:
             text_output.append("\n")
 
         return "\n".join(text_output)
-
-
-
