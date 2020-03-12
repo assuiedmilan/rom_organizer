@@ -5,6 +5,7 @@ from organizer.games.game import Game
 from organizer.games.game_organizer import GameOrganizer
 from organizer.parser.game_list_parser import GameListParser
 
+
 class MainParser:
 
     def __init__(self):
@@ -45,7 +46,6 @@ class MainParser:
         argument_parser.add_argument('--is_rom_folder', dest='is_rom_folder', default=True, help='If set to false, the parser will look into each subfolder of the root folder for gamelist.xml. Each subfolder will be considered as an independent gaming platform')
         argument_parser.add_argument('--generate_genres', dest='generate_genres', default=False, help='If set to true, no sorting will occur, but genre associations will be created')
 
-
         return argument_parser.parse_args()
 
     @staticmethod
@@ -60,6 +60,7 @@ class MainParser:
             print(something_happened)
         finally:
             pass
+
 
 if __name__ == "__main__":
 
