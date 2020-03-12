@@ -4,8 +4,5 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
-mypy = "*"
-
-[dev-packages]
-pytest = "*"
+lxml = "*"
+ppip
