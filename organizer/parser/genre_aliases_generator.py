@@ -1,4 +1,5 @@
 import os
+import re
 import traceback
 
 from lxml import etree
@@ -11,9 +12,10 @@ class GenreAliasesGenerator(object):
     GENRE_ASSOCIATION_NODE = "genre_associations"
     GENRE_ALIAS_KEY = "alias"
 
-    def __init__(self, gamelist_path, is_single_folder):
+    def __init__(self, gamelist_path, is_single_folder, replacement_list=None):
 
         self.document_root = None
+        self.replacement_list = replacement_list
 
         if is_single_folder:
             self.document_path = os.path.join(gamelist_path, self.GENRE_ASSOCIATION_FILE)
@@ -118,6 +120,18 @@ class GenreAliasesGenerator(object):
         if genre_association_node is not None and not self.__genre_alias_already_exists(genre):
             genre_node = etree.Element(self.game_parser.GENRE_KEY)
             genre_node.set(self.game_parser.GENRE_KEY, genre)
-            genre_node.set(self.GENRE_ALIAS_KEY, genre)
+            genre_node.set(self.GENRE_ALIAS_KEY, self.__compute_genre_alias(genre))
 
             genre_association_node.append(genre_node)
+
+    def __compute_genre_alias(self, genre):
+
+        computed_alias = genre
+
+        if self.replacement_list is not None:
+            for alias in self.replacement_list:
+                if re.match(".*{0}.*".format(alias), genre):
+                    computed_alias = alias
+                    break
+
+        return computed_alias
