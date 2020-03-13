@@ -23,7 +23,7 @@ class GameOrganizer:
         if current_path is not target_path and os.path.isfile(current_path):
 
             try:
-                os.makedirs(target_root, exist_ok=True)
+                if not os.path.isdir(target_root): os.makedirs(target_root)
                 shutil.move(current_path, target_path)
             except Exception as something_happened:
                 print("Failed to move file\n  from " + current_path + "\n  to " + target_path)

@@ -4,15 +4,13 @@ import re
 from lxml import etree
 
 
-class GameListParser:
+class GameListParser(object):
     GAMELIST_FILE = 'gamelist.xml'
-
-    GENRE_ASSOCIATION_NODE = "genre_associations"
 
     GAME_ID = "id"
     GAME_KEY = "game"
     GENRE_KEY = "genre"
-    GENRE_ALIAS_KEY = "alias"
+
     PATH_KEY = "path"
     ROOT_KEY = "root"
     NAME_KEY = "name"
@@ -32,26 +30,13 @@ class GameListParser:
     def reparse(self):
         self.__parse()
 
-    def create_genre_association_entry(self):
-        self.__add_genre_association_node()
-        self.__process_genre_aliases()
-
-        self.parsed_gamelist.write(self.gamelist, pretty_print=True)
-
-    def __parse(self):
-        parser = etree.XMLParser(remove_blank_text=True)
-        self.parsed_gamelist = etree.parse(self.gamelist, parser)
-
-        self.create_genre_association_entry()
-        self.__process_all_games()
-
-    def __get_all_games(self):
+    def get_all_games(self):
         return self.parsed_gamelist.findall(self.GAME_KEY)
 
-    def __get_game_id(self, game):
+    def get_game_id(self, game):
         return game.get(self.GAME_ID)
 
-    def __get_game_genre(self, game):
+    def get_game_genre(self, game):
         match_any_slashes_or_space = re.compile(r'(?:\s+|\\+|/+)')
         match_any_carret = re.compile(r'-+')
 
@@ -62,45 +47,32 @@ class GameListParser:
 
         return genre if genre is not self.NO_TEXT else "Unclassified"
 
-    def __get_game_genre_alias(self, game):
-        genre = self.__get_game_genre(game)
-        return self._get_genre_alias_from_genre(genre)
-
-    def _get_genre_alias_from_genre(self, genre):
-
-        genre_alias = None
-
-        genre_association_node = self.__get_game_association_node()
-
-        if genre_association_node is not None:
-
-            for node in genre_association_node.getchildren():
-                if node.get(self.GENRE_KEY) == genre:
-                    genre_alias = node.get(self.GENRE_ALIAS_KEY)
-                    break
-
-        return genre_alias
-
-    def __get_game_path(self, game):
+    def get_game_path(self, game):
         return self.__process_game_child_value(game, self.PATH_KEY)
 
-    def __get_game_name(self, game):
+    def get_game_name(self, game):
         return self.__process_game_child_value(game, self.NAME_KEY)
 
-    def __get_game_association_node(self):
-        return self.parsed_gamelist.find(self.GENRE_ASSOCIATION_NODE)
+    def is_game_valid(self, game):
+        return self.get_game_id(game) is not None and self.get_game_id(game) is not "0"
+
+    def __parse(self):
+        parser = etree.XMLParser(remove_blank_text=True)
+        self.parsed_gamelist = etree.parse(self.gamelist, parser)
+
+        self.__process_all_games()
 
     def __process_all_games(self):
-        for game in self.__get_all_games():
+        for game in self.get_all_games():
             self.__process_game_nodes(game)
 
     def __process_game_nodes(self, game):
-        if self.__game_is_valid(game):
-            details = {self.GENRE_KEY: self.__get_game_genre_alias(game),
-                       self.PATH_KEY: self.__get_game_path(game),
+        if self.is_game_valid(game):
+            details = {self.GENRE_KEY: self.get_game_genre(game),
+                       self.PATH_KEY: self.get_game_path(game),
                        self.ROOT_KEY: self.root}
 
-            self.game_map[self.__get_game_name(game)] = details
+            self.game_map[self.get_game_name(game)] = details
 
     def __process_game_child_value(self, game, key):
         game_child = game.find(key)
@@ -109,49 +81,6 @@ class GameListParser:
             return self.NO_TEXT
         else:
             return game_child.text
-
-    def __process_genre_aliases(self):
-
-        for game in self.__get_all_games():
-            if self.__game_is_valid(game):
-                self.__add_genre_node(self.__get_game_genre(game))
-
-        self.__sort_genre_aliases()
-
-    def __sort_genre_aliases(self):
-        genre_association_node = self.__get_game_association_node()
-
-        if genre_association_node is not None:
-            all_genres = genre_association_node.getchildren()
-            all_genres.sort(key=lambda x: x.attrib[self.GENRE_KEY].lower())
-
-            genre_association_node[:] = all_genres
-
-    def __game_is_valid(self, game):
-        return self.__get_game_id(game) is not None and self.__get_game_id(game) is not "0"
-
-    def __genre_alias_already_exists(self, genre):
-        return self._get_genre_alias_from_genre(genre) is not None
-
-    def __add_genre_association_node(self):
-
-        genre_association_node = self.__get_game_association_node()
-
-        if genre_association_node is None:
-
-            genre_association_node = etree.Element(self.GENRE_ASSOCIATION_NODE)
-            genre_association_node.set("text", "Defines aliases between games genres for folders organization")
-            self.parsed_gamelist.getroot().insert(1, genre_association_node)
-
-    def __add_genre_node(self, genre):
-        genre_association_node = self.__get_game_association_node()
-
-        if genre_association_node is not None and not self.__genre_alias_already_exists(genre):
-            genre_node = etree.Element(self.GENRE_KEY)
-            genre_node.set(self.GENRE_KEY, genre)
-            genre_node.set(self.GENRE_ALIAS_KEY, genre)
-
-            genre_association_node.append(genre_node)
 
     def __str__(self):
         text_output = []
