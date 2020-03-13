@@ -35,11 +35,3 @@ class Game:
 
     def get_root_path(self):
         return self.root_path
-
-    def __str__(self):
-        text_output = ["Game " + self.get_name() + " has properties:",
-                       "Genre" + ": " + self.get_genre(),
-                       "Path" + ": " + self.get_current_path(),
-                       "\n"]
-
-        return "\n".join(text_output)

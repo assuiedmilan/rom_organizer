@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from lxml import etree
 
@@ -19,25 +20,49 @@ class GenreAliasesGenerator(object):
         else:
             self.document_path = os.path.join(gamelist_path, '..', self.GENRE_ASSOCIATION_FILE)
 
+        if self.document_exists():
+            self.open_document()
+            
         self.game_parser = GameListParser(gamelist_path)
-        self.open_document()
 
     def create_genre_association_entry(self):
+
+        if self.document_exists():
+            self.open_document()
+        else:
+            self.create_document()
+
         self.__add_genre_association_node()
         self.__process_genre_aliases()
         self.write_document()
 
+    def document_exists(self):
+        return os.path.isfile(self.document_path)
+
+    def create_document(self):
+        self.document_root = etree.Element('root')
+
+    # noinspection PyBroadException
     def open_document(self):
 
-        if os.path.isfile(self.document_path):
+        try:
+
             parser = etree.XMLParser(remove_blank_text=True)
             self.document_root = etree.parse(self.document_path, parser).getroot()
-        else:
-            self.document_root = etree.Element('root')
+
+        except Exception as e:
+            print("Error parsing" + self.document_path)
+            print(e.message)
+            traceback.print_exc()
+            raise e
 
     def write_document(self):
         document = etree.ElementTree(self.document_root)
         document.write(self.document_path, pretty_print=True)
+
+    def get_game_genre_alias(self, game):
+        genre = self.game_parser.get_game_genre(game)
+        return self._get_genre_alias_from_genre(genre)
 
     def _get_genre_alias_from_genre(self, genre):
 
@@ -53,10 +78,6 @@ class GenreAliasesGenerator(object):
                     break
 
         return genre_alias
-
-    def __get_game_genre_alias(self, game):
-        genre = self.game_parser.get_game_genre(game)
-        return self._get_genre_alias_from_genre(genre)
 
     def __get_game_association_node(self):
         return self.document_root.find(self.GENRE_ASSOCIATION_NODE)
