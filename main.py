@@ -46,9 +46,11 @@ class MainParser:
 
     def __process_parsing(self):
         for folder in self.folders:
-            self.__parse_folder(folder)
+            self.__organize(folder)
+            self.__clean(folder)
 
-    def __parse_folder(self, folder):
+
+    def __organize(self, folder):
         try:
             parser = GameSortingMapGenerator(folder, self.argument_folder_is_single_rom_folder)
             game_list = Game.factory(parser.get_parsed_games())
@@ -61,11 +63,20 @@ class MainParser:
             pass
 
     @staticmethod
+    def __clean(folder):
+        for root, dirs, names in os.walk(folder):
+            for directory in dirs:
+                to_delete = os.path.join(root, directory)
+                if len(os.listdir(to_delete))  == 0:
+                    os.rmdir(to_delete)
+
+
+    @staticmethod
     def __parse_arguments():
         argument_parser = argparse.ArgumentParser(description='Process roms organizer options')
         argument_parser.add_argument('root_folder', help="Folder in which the parser will start looking for gamelist.xml files")
-        argument_parser.add_argument('--generate_genres', dest='generate_genres', default=False, help='If set to true, no sorting will occur, but genre associations will be created')
-        argument_parser.add_argument('--aliases_priority_list', dest='aliases_priority_list', type=str, default=None,
+        argument_parser.add_argument('--generate_genres', dest='generate_genres', default="False", help='If set to true, no sorting will occur, but genre associations will be created')
+        argument_parser.add_argument('--aliases_priority_list', dest='aliases_priority_list', type=str, default="",
                                      help='If filled, genre will be replaced by an alias in the order they appear on this list during genres generation.'
                                           ' Example: [\'platform\', \'action\']) will transform action-platform into platform and action-strategy into action')
 
