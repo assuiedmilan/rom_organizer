@@ -4,6 +4,7 @@ import argparse
 from organizer.games.game import Game
 from organizer.games.game_organizer import GameOrganizer
 from organizer.parser.game_list_parser import GameListParser
+from organizer.parser.game_sorting_map_generator import GameSortingMapGenerator
 from organizer.parser.genre_aliases_generator import GenreAliasesGenerator
 
 
@@ -15,7 +16,7 @@ class MainParser:
         self.folders = []
 
         self.find_folders(arguments.root_folder)
-        self.is_rom_folder = 1 == len(self.folders)
+        self.argument_folder_is_single_rom_folder = 1 == len(self.folders)
         self.generate_genres = arguments.generate_genres.lower() == 'true'
 
     def find_folders(self, from_root):
@@ -35,7 +36,7 @@ class MainParser:
     def __process_genres(self):
         for folder in self.folders:
             try:
-                parser = GenreAliasesGenerator(folder, self.is_rom_folder)
+                parser = GenreAliasesGenerator(folder, self.argument_folder_is_single_rom_folder)
                 parser.create_genre_association_entry()
             except Exception as something_happened:
                 print(something_happened)
@@ -46,18 +47,9 @@ class MainParser:
         for folder in self.folders:
             self.__parse_folder(folder)
 
-    @staticmethod
-    def __parse_arguments():
-        argument_parser = argparse.ArgumentParser(description='Process roms organizer options')
-        argument_parser.add_argument('root_folder', help="Folder in which the parser will start looking for gamelist.xml files")
-        argument_parser.add_argument('--generate_genres', dest='generate_genres', default=False, help='If set to true, no sorting will occur, but genre associations will be created')
-
-        return argument_parser.parse_args()
-
-    @staticmethod
-    def __parse_folder(folder):
+    def __parse_folder(self, folder):
         try:
-            parser = GameListParser(folder)
+            parser = GameSortingMapGenerator(folder, self.argument_folder_is_single_rom_folder)
             game_list = Game.factory(parser.get_parsed_games())
 
             game_organizer = GameOrganizer()
@@ -66,6 +58,14 @@ class MainParser:
             print(something_happened)
         finally:
             pass
+
+    @staticmethod
+    def __parse_arguments():
+        argument_parser = argparse.ArgumentParser(description='Process roms organizer options')
+        argument_parser.add_argument('root_folder', help="Folder in which the parser will start looking for gamelist.xml files")
+        argument_parser.add_argument('--generate_genres', dest='generate_genres', default=False, help='If set to true, no sorting will occur, but genre associations will be created')
+
+        return argument_parser.parse_args()
 
 
 if __name__ == "__main__":
