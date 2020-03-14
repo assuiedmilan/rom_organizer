@@ -1,6 +1,5 @@
 import os
 import argparse
-import traceback
 
 from organizer.games.game import Game
 from organizer.games.game_organizer import GameOrganizer
