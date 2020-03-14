@@ -21,7 +21,13 @@ class GameListParser(object):
         self.root = gamelist_path
         self.gamelist = os.path.join(gamelist_path, self.GAMELIST_FILE)
         self.parsed_gamelist = None
-        self.__parse()
+        self.files_to_parse = []
+        self.__process_all_files_to_parse()
+
+        print("In root " + self.root)
+        print(self.files_to_parse)
+        print("\n\n\n")
+        #self.__parse()
 
     def get_all_games(self):
         return self.parsed_gamelist.findall(self.GAME_KEY)
@@ -48,6 +54,11 @@ class GameListParser(object):
 
     def is_game_valid(self, game):
         return self.get_game_id(game) is not None and self.get_game_id(game) is not "0"
+
+    def __process_all_files_to_parse(self):
+        for root, dirs, names in os.walk(self.root):
+            for name in names:
+                self.files_to_parse.append(name)
 
     # noinspection PyBroadException
     def __parse(self):
