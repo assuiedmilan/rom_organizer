@@ -7,6 +7,7 @@ from organizer.games.game_organizer import GameOrganizer
 from organizer.parser.game_list_parser import GameListParser
 from organizer.parser.game_sorting_map_generator import GameSortingMapGenerator
 from organizer.parser.genre_aliases_generator import GenreAliasesGenerator
+from organizer.tools.exception_tools import ExceptionPrinter
 
 
 class MainParser:
@@ -52,8 +53,7 @@ class MainParser:
             parser.create_genre_association_entry()
 
         except Exception as something_happened:
-            traceback.print_exc()
-            print(something_happened.message)
+            ExceptionPrinter.print_exception(something_happened)
 
         finally:
             pass
@@ -69,8 +69,7 @@ class MainParser:
             game_organizer.move_game_files(game_list)
 
         except Exception as something_happened:
-            traceback.print_exc()
-            print(something_happened.message)
+            ExceptionPrinter.print_exception(something_happened)
 
         finally:
             pass

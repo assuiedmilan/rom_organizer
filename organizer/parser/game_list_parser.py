@@ -4,6 +4,8 @@ import traceback
 
 from lxml import etree
 
+from organizer.tools.exception_tools import ExceptionPrinter
+
 
 class GameListParser(object):
     GAMELIST_FILE = 'gamelist.xml'
@@ -63,11 +65,8 @@ class GameListParser(object):
 
         try:
             self.__parsed_gamelist = etree.parse(self.__gamelist, parser)
-        except Exception as e:
-            print("Error parsing " + self.__gamelist)
-            print(e.message)
-            traceback.print_exc()
-            raise e
+        except Exception as something_happened:
+            ExceptionPrinter.print_exception(something_happened)
 
     def __process_game_child_value(self, game, key):
         game_child = game.find(key)
