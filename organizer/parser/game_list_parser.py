@@ -18,19 +18,16 @@ class GameListParser(object):
     NO_TEXT = "Undefined_text"
 
     def __init__(self, gamelist_path):
-        self.root = gamelist_path
-        self.gamelist = os.path.join(gamelist_path, self.GAMELIST_FILE)
-        self.parsed_gamelist = None
-        self.files_to_parse = []
-        self.__process_all_files_to_parse()
-
-        print("In root " + self.root)
-        print(self.files_to_parse)
-        print("\n\n\n")
-        #self.__parse()
+        self.__root = gamelist_path
+        self.__gamelist = os.path.join(gamelist_path, self.GAMELIST_FILE)
+        self.__parsed_gamelist = None
+        self.__files_to_parse = []
 
     def get_all_games(self):
-        return self.parsed_gamelist.findall(self.GAME_KEY)
+        if self.__parsed_gamelist is None:
+            self.__parse()
+
+        return self.__parsed_gamelist.findall(self.GAME_KEY)
 
     def get_game_id(self, game):
         return game.get(self.GAME_ID)
@@ -56,18 +53,18 @@ class GameListParser(object):
         return self.get_game_id(game) is not None and self.get_game_id(game) is not "0"
 
     def __process_all_files_to_parse(self):
-        for root, dirs, names in os.walk(self.root):
+        for root, dirs, names in os.walk(self.__root):
             for name in names:
-                self.files_to_parse.append(name)
+                self.__files_to_parse.append(name)
 
     # noinspection PyBroadException
     def __parse(self):
         parser = etree.XMLParser(remove_blank_text=True)
 
         try:
-            self.parsed_gamelist = etree.parse(self.gamelist, parser)
+            self.__parsed_gamelist = etree.parse(self.__gamelist, parser)
         except Exception as e:
-            print("Error parsing " + self.gamelist)
+            print("Error parsing " + self.__gamelist)
             print(e.message)
             traceback.print_exc()
             raise e

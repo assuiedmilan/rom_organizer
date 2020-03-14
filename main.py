@@ -1,5 +1,6 @@
 import os
 import argparse
+import traceback
 
 from organizer.games.game import Game
 from organizer.games.game_organizer import GameOrganizer
@@ -30,35 +31,48 @@ class MainParser:
 
     def execute(self):
         if not self.generate_genres:
-            self.__process_parsing()
+            self.__process_sorting()
         else:
             self.__process_genres()
 
     def __process_genres(self):
         for folder in self.folders:
-            try:
-                parser = GenreAliasesGenerator(folder, self.argument_folder_is_single_rom_folder, self.aliases_priority_list)
-                parser.create_genre_association_entry()
-            except Exception as something_happened:
-                print(something_happened)
-            finally:
-                pass
+            self.__process_genres_for_folder(folder)
 
-    def __process_parsing(self):
+    def __process_sorting(self):
         for folder in self.folders:
             self.__organize(folder)
-            self.__clean(folder)
+            self.__parse_folder(folder)
 
 
-    def __organize(self, folder):
+    def __parse_folder(self, folder):
+
         try:
-            parser = GameSortingMapGenerator(folder, self.argument_folder_is_single_rom_folder)
-            game_list = Game.factory(parser.get_parsed_games())
 
-            game_organizer = GameOrganizer()
-            game_organizer.move_game_files(game_list)
+            parser = GenreAliasesGenerator(folder, self.argument_folder_is_single_rom_folder, self.aliases_priority_list)
+            parser.create_genre_association_entry()
+
         except Exception as something_happened:
-            print(something_happened)
+            traceback.print_exc()
+            print(something_happened.message)
+
+        finally:
+            pass
+
+    def __process_sorting_for_folder(self, folder):
+
+        try:
+
+            game_sorter = GameSortingMapGenerator(folder, self.argument_folder_is_single_rom_folder)
+            game_organizer = GameOrganizer()
+
+            game_list = Game.factory(game_sorter.get_parsed_games())
+            game_organizer.move_game_files(game_list)
+
+        except Exception as something_happened:
+            traceback.print_exc()
+            print(something_happened.message)
+
         finally:
             pass
 

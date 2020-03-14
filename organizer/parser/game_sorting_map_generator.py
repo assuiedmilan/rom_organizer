@@ -12,12 +12,13 @@ class GameSortingMapGenerator(object):
         self.genre_aliases_generator = GenreAliasesGenerator(gamelist_path, is_single_folder)
         self.game_map = collections.OrderedDict()
 
-        #self.__process_game_map()
-
     def get_parsed_games(self):
+        if 0 == len(self.game_map.items()):
+            self.process_game_map()
+
         return self.game_map
 
-    def __process_game_map(self):
+    def process_game_map(self):
 
         for game in self.game_parser.get_all_games():
             self.__process_games_details(game)
