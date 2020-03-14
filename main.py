@@ -44,7 +44,6 @@ class MainParser:
             self.__organize(folder)
             self.__parse_folder(folder)
 
-
     def __parse_folder(self, folder):
 
         try:
