@@ -130,8 +130,8 @@ class GenreAliasesGenerator(object):
 
         if self.replacement_list is not None:
             for alias in self.replacement_list:
-                if re.match(".*{0}.*".format(alias), genre):
-                    computed_alias = alias
+                if re.match(".*{0}.*".format(alias.lower()), genre.lower()):
+                    computed_alias = alias.capitalize()
                     break
 
         return computed_alias
