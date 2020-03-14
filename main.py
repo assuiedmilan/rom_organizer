@@ -17,7 +17,7 @@ class MainParser:
 
         self.find_folders(arguments.root_folder)
         self.argument_folder_is_single_rom_folder = 1 == len(self.folders)
-        self.generate_genres = arguments.generate_genres.lower() == 'true'
+        self.generate_genres = arguments.generate_genres
         self.aliases_priority_list = [str(item) for item in arguments.aliases_priority_list.split(',')]
 
     def find_folders(self, from_root):
@@ -75,7 +75,7 @@ class MainParser:
     def __parse_arguments():
         argument_parser = argparse.ArgumentParser(description='Process roms organizer options')
         argument_parser.add_argument('root_folder', help="Folder in which the parser will start looking for gamelist.xml files")
-        argument_parser.add_argument('--generate_genres', dest='generate_genres', default="False", help='If set to true, no sorting will occur, but genre associations will be created')
+        argument_parser.add_argument('--generate_genres', dest='generate_genres', type=bool, default=False, help='If set to true, no sorting will occur, but genre associations will be created')
         argument_parser.add_argument('--aliases_priority_list', dest='aliases_priority_list', type=str, default="",
                                      help='If filled, genre will be replaced by an alias in the order they appear on this list during genres generation.'
                                           ' Example: [\'platform\', \'action\']) will transform action-platform into platform and action-strategy into action')
