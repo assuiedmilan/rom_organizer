@@ -38,6 +38,9 @@ class GameListParser(object):
     def write_document(self):
         self.parsed_gamelist.write(self.gamelist, pretty_print=True)
 
+    def get_root(self):
+        return self.root
+
     def get_all_files(self):
         if not self.files_to_parse:
             self.__process_all_files_to_parse()
