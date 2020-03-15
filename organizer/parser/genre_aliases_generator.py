@@ -87,8 +87,7 @@ class GenreAliasesGenerator(object):
     def __process_genre_aliases(self):
 
         for game in self.game_parser.get_all_games():
-            if self.game_parser.is_game_valid(game):
-                self.__add_genre_node(self.game_parser.get_game_genre(game))
+            self.__add_genre_node(self.game_parser.get_game_genre(game))
 
         self.__sort_genre_aliases()
 
