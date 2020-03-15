@@ -7,6 +7,7 @@ from organizer.tools.exception_tools import ExceptionPrinter
 
 
 class GameListParser(object):
+
     GAMELIST_FILE = 'gamelist.xml'
 
     GAME_ID = "id"
@@ -25,7 +26,6 @@ class GameListParser(object):
         self.parsed_gamelist = None
         self.files_to_parse = []
 
-    # noinspection PyBroadException
     def parse(self):
         parser = etree.XMLParser(remove_blank_text=True)
 
@@ -83,11 +83,6 @@ class GameListParser(object):
     def get_game_name(self, game):
         return self.__process_game_child_value(game, self.NAME_KEY)
 
-    def __process_all_files_to_parse(self):
-        for root, dirs, names in os.walk(self.root):
-            for name in names:
-                self.files_to_parse.append(name)
-
     def get_game_node_from_game_file(self, name):
 
         game_node = None
@@ -100,6 +95,11 @@ class GameListParser(object):
                 game_node = game
 
         return game_node
+
+    def __process_all_files_to_parse(self):
+        for root, dirs, names in os.walk(self.root):
+            for name in names:
+                self.files_to_parse.append(name)
 
     def __process_game_child_value(self, game, key):
         game_child = game.find(key)

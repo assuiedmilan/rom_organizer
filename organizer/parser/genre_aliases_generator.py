@@ -5,6 +5,7 @@ import traceback
 from lxml import etree
 
 from organizer.parser.game_list_parser import GameListParser
+from organizer.tools.exception_tools import ExceptionPrinter
 
 
 class GenreAliasesGenerator(object):
@@ -27,6 +28,26 @@ class GenreAliasesGenerator(object):
             
         self.game_parser = GameListParser(gamelist_path)
 
+    def document_exists(self):
+        return os.path.isfile(self.document_path)
+
+    def create_document(self):
+        self.document_root = etree.Element('root')
+
+    def open_document(self):
+
+        try:
+
+            parser = etree.XMLParser(remove_blank_text=True)
+            self.document_root = etree.parse(self.document_path, parser).getroot()
+
+        except Exception as something_happened:
+            ExceptionPrinter.print_exception(something_happened)
+
+    def write_document(self):
+        document = etree.ElementTree(self.document_root)
+        document.write(self.document_path, pretty_print=True)
+
     def create_genre_association_entry(self):
 
         if self.document_exists():
@@ -37,30 +58,6 @@ class GenreAliasesGenerator(object):
         self.__add_genre_association_node()
         self.__process_genre_aliases()
         self.write_document()
-
-    def document_exists(self):
-        return os.path.isfile(self.document_path)
-
-    def create_document(self):
-        self.document_root = etree.Element('root')
-
-    # noinspection PyBroadException
-    def open_document(self):
-
-        try:
-
-            parser = etree.XMLParser(remove_blank_text=True)
-            self.document_root = etree.parse(self.document_path, parser).getroot()
-
-        except Exception as e:
-            print("Error parsing" + self.document_path)
-            print(e.message)
-            traceback.print_exc()
-            raise e
-
-    def write_document(self):
-        document = etree.ElementTree(self.document_root)
-        document.write(self.document_path, pretty_print=True)
 
     def get_game_genre_alias(self, game):
         genre = self.game_parser.get_game_genre(game)
