@@ -56,6 +56,7 @@ class GameOrganizer:
     def get_paths(self):
         current_path = self.game.get_current_path()
         file_name = os.path.basename(os.path.normpath(current_path))
+
         target_root = os.path.normpath(os.path.join(self.game.get_root_path(), self.game.get_genre()))
         target_path = os.path.normpath(os.path.join(target_root, file_name))
 
@@ -63,11 +64,16 @@ class GameOrganizer:
 
     def compute_new_game_location(self):
 
-        current_path, _, target_path = self.get_paths()
+        unix_relative_path = []
 
-        original_folder = os.path.split(current_path)[0]
-        relative_path = os.path.relpath(target_path, original_folder)
-        unix_relative_path = './' + relative_path.replace(os.path.sep, '/')
+        if self.parser is not None:
+
+            _, _, target_path = self.get_paths()
+
+            root = self.parser.get_root()
+
+            relative_path = os.path.relpath(target_path, root)
+            unix_relative_path = './' + relative_path.replace(os.path.sep, '/')
 
         return unix_relative_path
 
