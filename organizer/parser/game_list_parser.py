@@ -25,6 +25,19 @@ class GameListParser(object):
         self.parsed_gamelist = None
         self.files_to_parse = []
 
+    # noinspection PyBroadException
+    def parse(self):
+        parser = etree.XMLParser(remove_blank_text=True)
+
+        try:
+            self.parsed_gamelist = etree.parse(self.gamelist, parser)
+            self.__process_all_files_to_parse()
+        except Exception as something_happened:
+            ExceptionPrinter.print_exception(something_happened)
+
+    def write_document(self):
+        self.parsed_gamelist.write(self.gamelist, pretty_print=True)
+
     def get_all_files(self):
         if not self.files_to_parse:
             self.__process_all_files_to_parse()
@@ -33,7 +46,7 @@ class GameListParser(object):
 
     def get_all_games(self):
         if self.parsed_gamelist is None:
-            self.__parse()
+            self.parse()
 
         return self.parsed_gamelist.findall(self.GAME_KEY)
 
@@ -61,16 +74,6 @@ class GameListParser(object):
         for root, dirs, names in os.walk(self.root):
             for name in names:
                 self.files_to_parse.append(name)
-
-    # noinspection PyBroadException
-    def __parse(self):
-        parser = etree.XMLParser(remove_blank_text=True)
-
-        try:
-            self.parsed_gamelist = etree.parse(self.gamelist, parser)
-            self.__process_all_files_to_parse()
-        except Exception as something_happened:
-            ExceptionPrinter.print_exception(something_happened)
 
     def get_game_node_from_game_file(self, name):
 

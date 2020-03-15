@@ -1,6 +1,7 @@
 import os
 import shutil
 
+from organizer.parser.game_list_parser import GameListParser
 from organizer.tools.exception_tools import ExceptionPrinter
 
 
@@ -8,15 +9,35 @@ class GameOrganizer:
 
     def __init__(self, game):
         self.game = game
+        self.parser = None
 
     @classmethod
-    def move_game_files(cls, list_of_games):
+    def move_game_files(cls, list_of_games, gamelist_folder):
+
+        parser = GameListParser(gamelist_folder)
+        parser.parse()
 
         for game in list_of_games:
             organizer = GameOrganizer(game)
-
+            organizer.register_parser(parser)
             organizer.__move_game_file()
+            organizer.__update_game_node()
 
+        parser.write_document()
+
+    def get_game_node(self):
+        if self.parser is not None:
+            game_name = self.game.get_filename()
+            return self.parser.get_game_node_from_game_file(game_name)
+
+        return None
+
+    def register_parser(self, parser):
+        self.parser = parser
+
+    def __update_game_node(self):
+        node = self.get_game_node()
+        node.find(GameListParser.PATH_KEY).text = self.compute_new_game_location()
 
     def __move_game_file(self):
 
@@ -48,7 +69,7 @@ class GameOrganizer:
         relative_path = os.path.relpath(target_path, original_folder)
         unix_relative_path = './' + relative_path.replace(os.path.sep, '/')
 
-        return os.path.normpath(os.path.join(original_folder, unix_relative_path))
+        return unix_relative_path
 
 
 
