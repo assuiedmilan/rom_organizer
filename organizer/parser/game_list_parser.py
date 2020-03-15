@@ -17,6 +17,7 @@ class GameListParser(object):
     ROOT_KEY = "root"
     NAME_KEY = "name"
     NO_TEXT = "Undefined_text"
+    NO_GENRE = "Unclassified"
 
     def __init__(self, gamelist_path):
         self.root = gamelist_path
@@ -48,7 +49,7 @@ class GameListParser(object):
         genre = re.sub(match_any_slashes_or_space, '-', genre)
         genre = re.sub(match_any_carret, '-', genre)
 
-        return genre if genre is not self.NO_TEXT else "Unclassified"
+        return genre if genre is not self.NO_TEXT else self.NO_GENRE
 
     def get_game_path(self, game):
         return self.__process_game_child_value(game, self.PATH_KEY)
