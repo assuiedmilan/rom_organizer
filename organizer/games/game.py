@@ -27,6 +27,9 @@ class Game:
     def get_name(self):
         return self.name
 
+    def get_filename(self):
+        return os.path.split(self.get_current_path())[1]
+
     def get_genre(self):
         return self.genre
 
