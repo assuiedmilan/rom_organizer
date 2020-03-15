@@ -1,6 +1,5 @@
 import os
 import re
-import traceback
 
 from lxml import etree
 
