@@ -22,15 +22,27 @@ class MainParser(object):
     @staticmethod
     def __parse_arguments():
         argument_parser = argparse.ArgumentParser(description='Process roms organizer options')
+
         argument_parser.add_argument('root_folder',
-                                     help="Folder in which the parser will start looking for gamelist.xml files")
-        argument_parser.add_argument('--generate_genres', dest='generate_genres', type=bool, default=False,
-                                     help='If set to true, no sorting will occur, but genre associations will be created')
-        argument_parser.add_argument('--aliases_priority_list', dest='aliases_priority_list', type=str, default="",
+                                     help="Folder in which the parser will start looking for gamelist.xml files"
+                                     )
+
+        argument_parser.add_argument('--generate_genres',
+                                     dest='generate_genres',
+                                     type=bool,
+                                     default=False,
+                                     help='If set to true, no sorting will occur, but genre associations will be created'
+                                     )
+
+        argument_parser.add_argument('--aliases_priority_list',
+                                     dest='aliases_priority_list',
+                                     type=str,
+                                     default="",
                                      help='If filled, genre will be replaced by an alias in the order they appear on this list during genres generation.'
-                                          ' Example: [\'platform\', \'action\']) will transform action-platform into platform and action-strategy into action')
+                                          ' Example: "platform,action" will transform action-platform into platform and action-strategy into action')
 
         return argument_parser.parse_args()
+
 
     def __init__(self):
         arguments = self.__parse_arguments()
