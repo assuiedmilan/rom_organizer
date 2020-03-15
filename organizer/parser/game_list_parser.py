@@ -35,8 +35,18 @@ class GameListParser(object):
         except Exception as something_happened:
             ExceptionPrinter.print_exception(something_happened)
 
+        self.validate()
+
     def write_document(self):
+        self.validate()
         self.parsed_gamelist.write(self.gamelist, pretty_print=True)
+
+    def validate(self):
+        for game in self.get_all_games():
+            game_path = os.path.join(self.root, self.get_game_path(game))
+
+            if not os.path.isfile(game_path):
+                raise Exception("No game file located at %s", game_path)
 
     def get_root(self):
         return self.root
