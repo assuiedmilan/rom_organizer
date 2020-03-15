@@ -62,10 +62,9 @@ class MainParser:
         try:
 
             game_sorter = GameSortingMapGenerator(folder, self.argument_folder_is_single_rom_folder)
-            game_organizer = GameOrganizer()
-
             game_list = Game.factory(game_sorter.get_parsed_games())
-            game_organizer.move_game_files(game_list)
+
+            GameOrganizer.move_game_files(game_list)
 
         except Exception as something_happened:
             ExceptionPrinter.print_exception(something_happened)
