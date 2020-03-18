@@ -9,23 +9,20 @@ class Game:
     def factory(parsed_games):
         games_list = []
 
-        for game_name, game_details in parsed_games.items():
+        for game in parsed_games:
             games_list.append(
-                Game(game_name,
-                     game_details.get(GameListParser.GENRE_KEY),
-                     game_details.get(GameListParser.PATH_KEY),
-                     game_details.get(GameListParser.ROOT_KEY)))
+                Game(game.get(GameListParser.GENRE_KEY),
+                     game.get(GameListParser.PATH_KEY),
+                     game.get(GameListParser.ROOT_KEY)
+                     )
+            )
 
         return games_list
 
-    def __init__(self, name, genre, relative_path, root_path):
-        self.name = name
+    def __init__(self, genre, relative_path, root_path):
         self.genre = genre
         self.relative_path = relative_path
         self.root_path = root_path
-
-    def get_name(self):
-        return self.name
 
     def get_filename(self):
         return os.path.split(self.get_current_path())[1]
