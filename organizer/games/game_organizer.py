@@ -47,7 +47,10 @@ class GameOrganizer:
 
             try:
 
-                if not os.path.isdir(target_root): os.makedirs(target_root)
+                if not os.path.isdir(target_root):
+                    os.makedirs(target_root)
+
+                print("Moving " + self.game.get_filename())
                 shutil.move(current_path, target_path)
 
             except Exception as something_happened:

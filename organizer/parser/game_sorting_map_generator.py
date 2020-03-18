@@ -20,11 +20,15 @@ class GameSortingMapGenerator(object):
 
     def process_game_map(self):
 
+        print("Processing game map for " + self.gamelist_path)
         for file_name in self.game_parser.get_all_files():
+
             game = self.game_parser.get_game_node_from_game_file(file_name)
 
             if game is not None:
                 self.__process_games_details(game)
+
+        print("Done processing game map for " + self.gamelist_path)
 
     def __process_games_details(self, game):
 
