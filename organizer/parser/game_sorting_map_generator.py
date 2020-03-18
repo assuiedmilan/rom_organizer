@@ -10,13 +10,13 @@ class GameSortingMapGenerator(object):
         self.gamelist_path = gamelist_path
         self.game_parser = GameListParser(gamelist_path)
         self.genre_aliases_generator = GenreAliasesGenerator(gamelist_path, is_single_folder)
-        self.game_map = collections.OrderedDict()
+        self.game_list = []
 
     def get_parsed_games(self):
-        if 0 == len(self.game_map.items()):
+        if not self.game_list:
             self.process_game_map()
 
-        return self.game_map
+        return self.game_list
 
     def process_game_map(self):
 
@@ -36,7 +36,7 @@ class GameSortingMapGenerator(object):
                    self.game_parser.PATH_KEY: self.game_parser.get_game_path(game),
                    self.game_parser.ROOT_KEY: self.gamelist_path}
 
-        self.game_map[self.game_parser.get_game_name(game)] = details
+        self.game_list.append(details)
 
     def __compute_game_genre(self, game):
 
