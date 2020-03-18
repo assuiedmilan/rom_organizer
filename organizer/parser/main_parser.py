@@ -1,5 +1,6 @@
 import os
 import argparse
+import re
 
 from organizer.games.game import Game
 from organizer.games.game_organizer import GameOrganizer
@@ -43,24 +44,17 @@ class MainParser(object):
 
         return argument_parser.parse_args()
 
-
     def __init__(self):
         arguments = self.__parse_arguments()
 
         self.folders = []
+        self.aliases_priority_list = []
 
-        self.find_folders(arguments.root_folder)
+        self.__process_priority_list(arguments.aliases_priority_list)
+        self.__process_folders(arguments.root_folder)
+
         self.argument_folder_is_single_rom_folder = 1 == len(self.folders)
         self.generate_genres = arguments.generate_genres
-        self.aliases_priority_list = [str(item) for item in arguments.aliases_priority_list.split(',')]
-
-    def find_folders(self, from_root):
-
-        self.folders = []
-
-        for root, dirs, names in os.walk(from_root):
-            if GameListParser.GAMELIST_FILE in names:
-                self.folders.append(root)
 
     def execute(self):
         if not self.generate_genres:
@@ -68,12 +62,26 @@ class MainParser(object):
         else:
             self.__process_genres()
 
+    def __process_folders(self, from_root):
+        for root, dirs, names in os.walk(from_root):
+            if GameListParser.GAMELIST_FILE in names:
+                self.folders.append(root)
+
+    def __process_priority_list(self, priority_list):
+        for item in priority_list.split(','):
+            if item is not None and item is not "" and item != "":
+
+                matcher = re.match("\\s*(.*)\\s*", item)
+                self.aliases_priority_list.append(matcher.group(1))
+
     def __process_genres(self):
         for folder in self.folders:
+            print("Working on " + folder + " genres")
             self.__process_genres_for_folder(folder)
 
     def __process_sorting(self):
         for folder in self.folders:
+            print("Working on " + folder + " sorting")
             self.__process_sorting_for_folder(folder)
             self.__clean(folder)
 
