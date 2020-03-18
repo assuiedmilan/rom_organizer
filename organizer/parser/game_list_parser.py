@@ -20,6 +20,8 @@ class GameListParser(object):
     NO_TEXT = "Undefined_text"
     NO_GENRE = "Unclassified"
 
+    __EXCLUDE_FOLDERS = ['media']
+
     def __init__(self, gamelist_path):
         self.root = gamelist_path
         self.gamelist = os.path.join(gamelist_path, self.GAMELIST_FILE)
@@ -31,7 +33,6 @@ class GameListParser(object):
 
         try:
             self.parsed_gamelist = etree.parse(self.gamelist, parser)
-            self.__process_all_files_to_parse()
         except Exception as something_happened:
             ExceptionPrinter.print_exception(something_happened)
 
@@ -97,9 +98,17 @@ class GameListParser(object):
         return game_node
 
     def __process_all_files_to_parse(self):
+
+        self.files_to_parse = []
+
         for root, dirs, names in os.walk(self.root):
-            for name in names:
-                self.files_to_parse.append(name)
+
+            path_contains_excluded_folder = any(value in root for value in self.__EXCLUDE_FOLDERS)
+
+            if not path_contains_excluded_folder:
+
+                for name in names:
+                    self.files_to_parse.append(name)
 
     def __process_game_child_value(self, game, key):
         game_child = game.find(key)
