@@ -5,3 +5,6 @@ name = "pypi"
 
 [packages]
 lxml = "*"
+pytest = "*"
+mock = "*"
+MKLpy = "*"
