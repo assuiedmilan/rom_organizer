@@ -6,5 +6,6 @@ name = "pypi"
 [packages]
 lxml = "*"
 pytest = "*"
+pytest-lazy-fixture = "*"
 mock = "*"
 MKLpy = "*"

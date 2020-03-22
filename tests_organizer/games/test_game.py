@@ -10,9 +10,16 @@ FILENAME = 'tata.zip'
 REL_PATH = os.path.join(SUBFOLDER, FILENAME)
 ROOT = os.path.join('home', 'pi', 'roms')
 
-@pytest.fixture
-def game():
-    return Game(GENRE, REL_PATH, ROOT)
+@pytest.fixture(
+    params=[
+        pytest.param({'values': {'genre': 'Action', 'root': os.path.join('home', 'pi', 'roms'), 'subfolder': 'toto', 'filename': 'tata.zip'}, 'expected': {'genre': 'Action', 'root': os.path.join('home', 'pi', 'roms'), 'path': os.path.join('home', 'pi', 'roms', 'toto', 'tata.zip'), 'filename': 'tata.zip'}}),
+        pytest.param({'values': {'genre': 'Action', 'root': os.path.join('home', 'pi', 'roms'), 'subfolder': 'toto', 'filename': 'tata.zip'}, 'expected': {'genre': 'Strategy', 'root': os.path.join('home', 'pi', 'roms'), 'path': os.path.join('home', 'pi', 'roms', 'tutu', 'tata.zip'), 'filename': 'titi.zip'}}, marks=pytest.mark.xfail)
+    ]
+)
+def game(request):
+    values = request.param.get('values')
+    expected = request.param.get('expected')
+    return Game(values.get('genre'), os.path.join(values.get('subfolder'), values.get('filename')), values.get('root')), expected
 
 def test_factory():
     game_details = [
@@ -28,17 +35,29 @@ def test_factory():
     for item in games_list:
         assert isinstance(item, Game)
 
+@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
+def test_get_genre(test_input):
+    game, expected = test_input
+    assert game.get_genre() == expected.get('genre')
 
-def test_get_filename(game):
-    assert game.get_filename() == FILENAME
+@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
+def test_get_root_path(test_input):
+    game, expected = test_input
+    assert game.get_genre() == expected.get('root')
+
+@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
+def test_get_current_path(test_input):
+    game, expected = test_input
+    assert game.get_genre() == expected.get('path')
+
+@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
+def test_get_filename(test_input):
+    game, expected = test_input
+    assert game.get_genre() == expected.get('filename')
 
 
-def test_get_genre(game):
-    assert game.get_genre() == GENRE
 
-def test_get_current_path(game):
-    game = Game(GENRE, REL_PATH, ROOT)
-    assert game.get_current_path() == os.path.join(ROOT, REL_PATH)
 
-def test_get_root_path(game):
-    assert game.get_root_path() == ROOT
+
+
+
