@@ -1,31 +1,62 @@
 import os
-
 import pytest
 
 from organizer.games.game import Game
 
-GENRE = 'Action'
-SUBFOLDER = 'toto'
-FILENAME = 'tata.zip'
-REL_PATH = os.path.join(SUBFOLDER, FILENAME)
-ROOT = os.path.join('home', 'pi', 'roms')
+ROOT_PATH = os.path.join('home', 'pi', 'roms')
 
-@pytest.fixture(
-    params=[
-        pytest.param({'values': {'genre': 'Action', 'root': os.path.join('home', 'pi', 'roms'), 'subfolder': 'toto', 'filename': 'tata.zip'}, 'expected': {'genre': 'Action', 'root': os.path.join('home', 'pi', 'roms'), 'path': os.path.join('home', 'pi', 'roms', 'toto', 'tata.zip'), 'filename': 'tata.zip'}}),
-        pytest.param({'values': {'genre': 'Action', 'root': os.path.join('home', 'pi', 'roms'), 'subfolder': 'toto', 'filename': 'tata.zip'}, 'expected': {'genre': 'Strategy', 'root': os.path.join('home', 'pi', 'roms'), 'path': os.path.join('home', 'pi', 'roms', 'tutu', 'tata.zip'), 'filename': 'titi.zip'}}, marks=pytest.mark.xfail)
-    ]
-)
+GENRE = 'genre'
+ROOT = 'root'
+PATH = 'path'
+SUBFOLDER = 'subfolder'
+FILENAME = 'filename'
+
+VALID_SUBFOLDER = 'toto'
+VALID_GENRE = 'Action'
+VALID_FILENAME = 'tata.zip'
+
+TEST_PARAMETERS = [(pytest.lazy_fixture('game'), pytest.lazy_fixture('valid_expected')), pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('valid_expected'), marks=pytest.mark.xfail )]
+
+@pytest.fixture( params= [{GENRE: VALID_GENRE, ROOT: ROOT_PATH, SUBFOLDER: VALID_SUBFOLDER, FILENAME: VALID_FILENAME}] )
 def game(request):
-    values = request.param.get('values')
-    expected = request.param.get('expected')
-    return Game(values.get('genre'), os.path.join(values.get('subfolder'), values.get('filename')), values.get('root')), expected
+    values = request.param
+    return Game(values.get(GENRE), os.path.join(values.get(SUBFOLDER), values.get(FILENAME)), values.get(ROOT))
+
+
+@pytest.fixture( params= [{GENRE: VALID_GENRE, ROOT: ROOT_PATH, PATH: os.path.join(ROOT_PATH, VALID_SUBFOLDER, VALID_FILENAME), FILENAME: VALID_FILENAME}] )
+def valid_expected(request):
+    return request.param
+
+@pytest.fixture( params= [{GENRE: 'Strategy', ROOT: ROOT_PATH, PATH: os.path.join(ROOT_PATH, 'tutu', VALID_FILENAME), FILENAME: 'titi.zip'}] )
+def invalid_expected(request):
+    return request.param
+
+def game_test_parameters():
+    from _pytest.mark import MarkGenerator
+    generator = MarkGenerator()
+    return generator.parametrize('test_input, expected', TEST_PARAMETERS)
+
+@game_test_parameters()
+def test_get_genre(test_input, expected):
+    assert test_input.get_genre() == expected.get(GENRE)
+
+@game_test_parameters()
+def test_get_root_path(test_input, expected):
+    assert test_input.get_root_path() == expected.get(ROOT)
+
+@game_test_parameters()
+def test_get_current_path(test_input, expected):
+    assert test_input.get_current_path() == expected.get(PATH)
+
+@game_test_parameters()
+def test_get_filename(test_input, expected):
+    assert test_input.get_filename() == expected.get(FILENAME)
 
 def test_factory():
     game_details = [
-        {'genre': 'Action', 'path': REL_PATH, 'root': ROOT},
-        {'genre': 'Strategy', 'path': REL_PATH, 'root': ROOT},
-        {'genre': 'Platform', 'path': REL_PATH, 'root': ROOT}
+        {'genre': 'Action', 'path': 'toto\tata.zip', 'root': ROOT_PATH},
+        {'genre': 'Strategy', 'path': 'toto\tata.zip', 'root': ROOT_PATH},
+        {'genre': 'Platform', 'path': 'toto\tata.zip', 'root': ROOT_PATH}
     ]
 
     games_list = Game.factory(game_details)
@@ -34,30 +65,3 @@ def test_factory():
 
     for item in games_list:
         assert isinstance(item, Game)
-
-@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
-def test_get_genre(test_input):
-    game, expected = test_input
-    assert game.get_genre() == expected.get('genre')
-
-@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
-def test_get_root_path(test_input):
-    game, expected = test_input
-    assert game.get_genre() == expected.get('root')
-
-@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
-def test_get_current_path(test_input):
-    game, expected = test_input
-    assert game.get_genre() == expected.get('path')
-
-@pytest.mark.parametrize('test_input', [pytest.lazy_fixture('game')])
-def test_get_filename(test_input):
-    game, expected = test_input
-    assert game.get_genre() == expected.get('filename')
-
-
-
-
-
-
-
