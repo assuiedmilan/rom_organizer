@@ -6,8 +6,8 @@ from organizer.tools.exception_tools import ExceptionPrinter
 class XmlFilesOperations(object):
 
     @staticmethod
-    def write(xml_to_write, target):
-        xml_to_write.write(target, pretty_print=True)
+    def write(document_to_write, target):
+        document_to_write.write(target, pretty_print=True)
 
     @staticmethod
     def parse(file_to_parse):
