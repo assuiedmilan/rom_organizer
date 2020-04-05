@@ -22,7 +22,6 @@ def game(request):
     values = request.param
     return Game(values.get(GENRE), os.path.join(values.get(SUBFOLDER), values.get(FILENAME)), values.get(ROOT))
 
-
 @pytest.fixture( params= [{GENRE: VALID_GENRE, ROOT: ROOT_PATH, PATH: os.path.join(ROOT_PATH, VALID_SUBFOLDER, VALID_FILENAME), FILENAME: VALID_FILENAME}] )
 def valid_expected(request):
     return request.param
