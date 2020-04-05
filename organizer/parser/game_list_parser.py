@@ -1,9 +1,7 @@
 import os
 import re
 
-from lxml import etree
-
-from organizer.tools.exception_tools import ExceptionPrinter
+from organizer.tools.xml_files_operations import XmlFilesOperations
 
 
 class GameListParser(object):
@@ -29,18 +27,12 @@ class GameListParser(object):
         self.files_to_parse = []
 
     def parse(self):
-        parser = etree.XMLParser(remove_blank_text=True)
-
-        try:
-            self.parsed_gamelist = etree.parse(self.gamelist, parser)
-        except Exception as something_happened:
-            ExceptionPrinter.print_exception(something_happened)
-
+        self.parsed_gamelist = XmlFilesOperations.parse(self.gamelist)
         self.validate()
 
     def write_document(self):
         self.validate()
-        self.parsed_gamelist.write(self.gamelist, pretty_print=True)
+        XmlFilesOperations.write(self.parsed_gamelist, self.gamelist)
 
     def validate(self):
         for game in self.get_all_games():

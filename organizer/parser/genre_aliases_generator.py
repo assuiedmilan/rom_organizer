@@ -4,7 +4,7 @@ import re
 from lxml import etree
 
 from organizer.parser.game_list_parser import GameListParser
-from organizer.tools.exception_tools import ExceptionPrinter
+from organizer.tools.xml_files_operations import XmlFilesOperations
 
 
 class GenreAliasesGenerator(object):
@@ -34,18 +34,11 @@ class GenreAliasesGenerator(object):
         self.document_root = etree.Element('root')
 
     def open_document(self):
-
-        try:
-
-            parser = etree.XMLParser(remove_blank_text=True)
-            self.document_root = etree.parse(self.document_path, parser).getroot()
-
-        except Exception as something_happened:
-            ExceptionPrinter.print_exception(something_happened)
+        self.document_root = XmlFilesOperations.parse(self.document_path)
 
     def write_document(self):
         document = etree.ElementTree(self.document_root)
-        document.write(self.document_path, pretty_print=True)
+        XmlFilesOperations.write(document, self.document_path)
 
     def create_genre_association_entry(self):
 
