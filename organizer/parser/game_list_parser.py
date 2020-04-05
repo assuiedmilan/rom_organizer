@@ -39,7 +39,7 @@ class GameListParser(object):
             game_path = os.path.join(self.root, self.get_game_path(game))
 
             if not os.path.isfile(game_path):
-                raise Exception("No game file located at %s", game_path)
+                raise KeyError("No game file located at %s", game_path)
 
     def get_root(self):
         return self.root
