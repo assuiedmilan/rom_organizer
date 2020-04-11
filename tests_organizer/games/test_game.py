@@ -15,7 +15,10 @@ VALID_SUBFOLDER = 'toto'
 VALID_GENRE = 'Action'
 VALID_FILENAME = 'tata.zip'
 
-TEST_PARAMETERS = [(pytest.lazy_fixture('game'), pytest.lazy_fixture('valid_expected')), pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('valid_expected'), marks=pytest.mark.xfail )]
+TEST_PARAMETERS = [
+    pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('valid_expected')),
+    pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('invalid_expected'), marks=pytest.mark.xfail )
+]
 
 @pytest.fixture( params= [{GENRE: VALID_GENRE, ROOT: ROOT_PATH, SUBFOLDER: VALID_SUBFOLDER, FILENAME: VALID_FILENAME}] )
 def game(request):

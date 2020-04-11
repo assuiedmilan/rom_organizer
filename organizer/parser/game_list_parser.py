@@ -56,9 +56,6 @@ class GameListParser(object):
 
         return self.parsed_gamelist.findall(self.GAME_KEY)
 
-    def get_game_id(self, game):
-        return game.get(self.GAME_ID)
-
     def get_game_genre(self, game):
         match_any_slashes_or_space = re.compile(r'(?:\s+|\\+|/+)')
         match_any_carret = re.compile(r'-+')
