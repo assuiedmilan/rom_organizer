@@ -16,7 +16,7 @@ def two_values(request):
 def three_values(request):
     return request.param
 
-def ready_parser_parameters():
+def parameters_as_decorator():
     from _pytest.mark import MarkGenerator
     generator = MarkGenerator()
     one_fixture = pytest.lazy_fixture('one_value')
@@ -24,8 +24,11 @@ def ready_parser_parameters():
     three_fixture = pytest.lazy_fixture('three_values')
     return generator.parametrize('one, two, three', [(one_fixture, two_fixture, three_fixture)] )
 
-@ready_parser_parameters()
+@pytest.mark.parametrize('one, two, three', [pytest.lazy_fixture('one_value'), pytest.lazy_fixture('two_values'), pytest.lazy_fixture('three_values')])
 def test_print(one, two, three):
     print one + ' ' + two + ' ' + three
 
+@parameters_as_decorator()
+def test_print(one, two, three):
+    print one + ' ' + two + ' ' + three
 
