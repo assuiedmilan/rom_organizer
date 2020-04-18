@@ -89,8 +89,7 @@ class MainParser(object):
 
         try:
 
-            parser = GenreAliasesGenerator(folder, self.argument_folder_is_single_rom_folder,
-                                           self.aliases_priority_list)
+            parser = GenreAliasesGenerator(folder, self.argument_folder_is_single_rom_folder, self.aliases_priority_list)
             parser.create_genre_association_entry()
 
         except Exception as something_happened:
