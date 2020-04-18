@@ -1,16 +1,15 @@
 import lxml.etree
 import pytest
 
+# noinspection PyUnresolvedReferences
+from tests_organizer.common.fixtures import root_values
+# noinspection PyUnresolvedReferences
 from tests_organizer.common.fixtures import basic_parser
+# noinspection PyUnresolvedReferences
 from tests_organizer.common.fixtures import ready_parser
+
 from tests_organizer.common import gamelist
 from tests_organizer.common.gamelist import EXPECTED_DATA
-
-GAMELIST_ROOT_VALUES = ['GAMES']
-
-@pytest.fixture(params = GAMELIST_ROOT_VALUES)
-def root_values(request):
-    yield request.param
 
 def ready_parser_parameters():
     from _pytest.mark import MarkGenerator
