@@ -1,5 +1,4 @@
 import lxml.etree
-import mock
 import pytest
 
 from tests_organizer.common.fixtures import basic_parser

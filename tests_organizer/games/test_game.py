@@ -17,7 +17,7 @@ VALID_FILENAME = 'tata.zip'
 
 TEST_PARAMETERS = [
     pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('valid_expected')),
-    pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('invalid_expected'), marks=pytest.mark.xfail )
+    pytest.param( pytest.lazy_fixture('game'), pytest.lazy_fixture('invalid_expected'), marks=pytest.mark.xfail(reason="Wrong expected values on purpose", strict=True) )
 ]
 
 @pytest.fixture( params= [{GENRE: VALID_GENRE, ROOT: ROOT_PATH, SUBFOLDER: VALID_SUBFOLDER, FILENAME: VALID_FILENAME}] )
@@ -29,7 +29,7 @@ def game(request):
 def valid_expected(request):
     return request.param
 
-@pytest.fixture( params= [{GENRE: 'Strategy', ROOT: ROOT_PATH, PATH: os.path.join(ROOT_PATH, 'tutu', VALID_FILENAME), FILENAME: 'titi.zip'}] )
+@pytest.fixture( params= [{GENRE: 'Strategy', ROOT: os.path.join('home', 'pi', 'rom'), PATH: os.path.join(ROOT_PATH, 'tutu', VALID_FILENAME), FILENAME: 'titi.zip'}] )
 def invalid_expected(request):
     return request.param
 
