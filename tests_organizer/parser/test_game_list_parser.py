@@ -2,31 +2,16 @@ import lxml.etree
 import mock
 import pytest
 
-from organizer.parser.game_list_parser import GameListParser
+from tests_organizer.common.fixtures import basic_parser
+from tests_organizer.common.fixtures import ready_parser
 from tests_organizer.common import gamelist
 from tests_organizer.common.gamelist import EXPECTED_DATA
-from tests_organizer.common.mocks import PARSED_DOCUMENT
 
 GAMELIST_ROOT_VALUES = ['GAMES']
 
 @pytest.fixture(params = GAMELIST_ROOT_VALUES)
 def root_values(request):
     yield request.param
-
-@pytest.fixture()
-def basic_parser(root_values):
-    with mock.patch('organizer.tools.xml_files_operations.XmlFilesOperations.parse') as parser:
-        parser.return_value = PARSED_DOCUMENT
-        yield GameListParser(root_values)
-
-@pytest.fixture()
-def ready_parser(basic_parser):
-    with mock.patch('organizer.parser.game_list_parser.GameListParser.validate') as validation:
-        with mock.patch('organizer.tools.xml_files_operations.XmlFilesOperations.parse') as parser:
-            parser.return_value = PARSED_DOCUMENT
-            validation.return_value = True
-            basic_parser.parse()
-            yield basic_parser
 
 def ready_parser_parameters():
     from _pytest.mark import MarkGenerator
